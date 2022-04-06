@@ -203,6 +203,31 @@ static int armv8_read_reg(struct armv8_common *armv8, int regnum, uint64_t *regv
 				ARMV8_MRS(SYSTEM_SPSR_EL3, 0), &value);
 		value_64 = value;
 		break;
+	case ARMV8_TTBR0:
+		retval = dpm->instr_read_data_r0(dpm,
+				armv8_opcode(armv8, READ_REG_TTBR0), &value);
+		value_64 = value;
+		break;
+	case ARMV8_TTBCR:
+		retval = dpm->instr_read_data_r0(dpm,
+				armv8_opcode(armv8, READ_REG_TTBCR), &value);
+		value_64 = value;
+		break;
+	case ARMV8_SCTLR:
+		retval = dpm->instr_read_data_r0(dpm,
+				armv8_opcode(armv8, READ_REG_SCTLR), &value);
+		value_64 = value;
+		break;
+	case ARMV8_MAIR0:
+		retval = dpm->instr_read_data_r0(dpm,
+				armv8_opcode(armv8, READ_REG_MAIR0), &value);
+		value_64 = value;
+		break;
+	case ARMV8_MAIR1:
+		retval = dpm->instr_read_data_r0(dpm,
+				armv8_opcode(armv8, READ_REG_MAIR1), &value);
+		value_64 = value;
+		break;
 	default:
 		retval = ERROR_FAIL;
 		break;
@@ -322,6 +347,31 @@ static int armv8_write_reg(struct armv8_common *armv8, int regnum, uint64_t valu
 		retval = dpm->instr_write_data_r0(dpm,
 				ARMV8_MSR_GP(SYSTEM_SPSR_EL3, 0), value);
 		break;
+	case ARMV8_TTBR0:
+		value = value_64;
+		retval = dpm->instr_write_data_r0(dpm,
+			armv8_opcode(armv8, WRITE_REG_TTBR0), value);
+		break;
+	case ARMV8_TTBCR:
+		value = value_64;
+		retval = dpm->instr_write_data_r0(dpm,
+			armv8_opcode(armv8, WRITE_REG_TTBCR), value);
+		break;
+	case ARMV8_SCTLR:
+		value = value_64;
+		retval = dpm->instr_write_data_r0(dpm,
+			armv8_opcode(armv8, WRITE_REG_SCTLR), value);
+		break;
+	case ARMV8_MAIR0:
+		value = value_64;
+		retval = dpm->instr_write_data_r0(dpm,
+			armv8_opcode(armv8, WRITE_REG_MAIR0), value);
+		break;
+	case ARMV8_MAIR1:
+		value = value_64;
+		retval = dpm->instr_write_data_r0(dpm,
+			armv8_opcode(armv8, WRITE_REG_MAIR1), value);
+		break;
 	default:
 		retval = ERROR_FAIL;
 		break;
@@ -428,6 +478,26 @@ static int armv8_read_reg32(struct armv8_common *armv8, int regnum, uint64_t *re
 		/* "VMRS r0, FPSCR"; then return via DCC */
 		retval = dpm->instr_read_data_r0(dpm,
 			ARMV4_5_VMRS(0), &value);
+		break;
+	case ARMV8_TTBR0:
+		retval = dpm->instr_read_data_r0(dpm,
+			armv8_opcode(armv8, READ_REG_TTBR0), &value);
+		break;
+	case ARMV8_TTBCR:
+		retval = dpm->instr_read_data_r0(dpm,
+			armv8_opcode(armv8, READ_REG_TTBCR), &value);
+		break;
+	case ARMV8_SCTLR:
+		retval = dpm->instr_read_data_r0(dpm,
+			armv8_opcode(armv8, READ_REG_SCTLR), &value);
+		break;
+	case ARMV8_MAIR0:
+		retval = dpm->instr_read_data_r0(dpm,
+			armv8_opcode(armv8, READ_REG_MAIR0), &value);
+		break;
+	case ARMV8_MAIR1:
+		retval = dpm->instr_read_data_r0(dpm,
+			armv8_opcode(armv8, READ_REG_MAIR1), &value);
 		break;
 	default:
 		retval = ERROR_FAIL;
@@ -564,6 +634,26 @@ static int armv8_write_reg32(struct armv8_common *armv8, int regnum, uint64_t va
 		/* move to r0 from DCC, then "VMSR FPSCR, r0" */
 		retval = dpm->instr_write_data_r0(dpm,
 			ARMV4_5_VMSR(0), value);
+		break;
+	case ARMV8_TTBR0:
+		retval = dpm->instr_write_data_r0(dpm,
+				armv8_opcode(armv8, WRITE_REG_TTBR0), value);
+		break;
+	case ARMV8_TTBCR:
+		retval = dpm->instr_write_data_r0(dpm,
+				armv8_opcode(armv8, WRITE_REG_TTBCR), value);
+		break;
+	case ARMV8_SCTLR:
+		retval = dpm->instr_write_data_r0(dpm,
+				armv8_opcode(armv8, WRITE_REG_SCTLR), value);
+		break;
+	case ARMV8_MAIR0:
+		retval = dpm->instr_write_data_r0(dpm,
+				armv8_opcode(armv8, WRITE_REG_MAIR0), value);
+		break;
+	case ARMV8_MAIR1:
+		retval = dpm->instr_write_data_r0(dpm,
+				armv8_opcode(armv8, WRITE_REG_MAIR1), value);
 		break;
 	default:
 		retval = ERROR_FAIL;
@@ -1433,6 +1523,11 @@ static const struct {
 														NULL},
 	{ ARMV8_SPSR_EL3, "SPSR_EL3", 32, ARMV8_64_EL3H, REG_TYPE_UINT32, "banked", "net.sourceforge.openocd.banked",
 														NULL},
+	{ ARMV8_TTBR0, "TTBR0", 64, ARM_MODE_ANY, REG_TYPE_UINT64, "general", "org.gnu.gdb.aarch64.core", NULL },
+	{ ARMV8_TTBCR, "TTBCR", 64, ARM_MODE_ANY, REG_TYPE_UINT64, "general", "org.gnu.gdb.aarch64.core", NULL },
+	{ ARMV8_SCTLR, "SCTLR", 64, ARM_MODE_ANY, REG_TYPE_UINT64, "general", "org.gnu.gdb.aarch64.core", NULL },
+	{ ARMV8_MAIR0, "MAIR0", 64, ARM_MODE_ANY, REG_TYPE_UINT64, "general", "org.gnu.gdb.aarch64.core", NULL },
+	{ ARMV8_MAIR1, "MAIR1", 64, ARM_MODE_ANY, REG_TYPE_UINT64, "general", "org.gnu.gdb.aarch64.core", NULL },
 };
 
 static const struct {
@@ -1495,6 +1590,11 @@ static const struct {
 	{ ARMV8_V15, 0, "d30", 64, ARM_MODE_ANY, REG_TYPE_IEEE_DOUBLE, NULL, "org.gnu.gdb.arm.vfp"},
 	{ ARMV8_V15, 8, "d31", 64, ARM_MODE_ANY, REG_TYPE_IEEE_DOUBLE, NULL, "org.gnu.gdb.arm.vfp"},
 	{ ARMV8_FPSR, 0, "fpscr", 32, ARM_MODE_ANY, REG_TYPE_UINT32, "float", "org.gnu.gdb.arm.vfp"},
+	{ ARMV8_TTBR0, 0, "TTBR0", 32, ARM_MODE_ANY, REG_TYPE_UINT32, "general", "org.gnu.gdb.arm.core" },
+	{ ARMV8_TTBCR, 0, "TTBCR", 32, ARM_MODE_ANY, REG_TYPE_UINT32, "general", "org.gnu.gdb.arm.core" },
+	{ ARMV8_SCTLR, 0, "SCTLR", 32, ARM_MODE_ANY, REG_TYPE_UINT32, "general", "org.gnu.gdb.arm.core" },
+	{ ARMV8_MAIR0, 0, "MAIR0", 32, ARM_MODE_ANY, REG_TYPE_UINT32, "general", "org.gnu.gdb.arm.core" },
+	{ ARMV8_MAIR1, 0, "MAIR1", 32, ARM_MODE_ANY, REG_TYPE_UINT32, "general", "org.gnu.gdb.arm.core" },
 };
 
 #define ARMV8_NUM_REGS ARRAY_SIZE(armv8_regs)
