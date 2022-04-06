@@ -114,6 +114,21 @@ void register_cache_invalidate(struct reg_cache *cache)
 	}
 }
 
+/** Marks the contents of the register cache as invalid. */
+void register_cache_invalidate_safe(struct reg_cache* cache)
+{
+    struct reg* reg = cache->reg_list;
+
+    for (unsigned int n = cache->num_regs; n != 0; n--, reg++) {
+        if (!reg->exist)
+            continue;
+        if (reg->dirty)
+			continue;
+
+        reg->type->get(reg);
+    }
+}
+
 static int register_get_dummy_core_reg(struct reg *reg)
 {
 	return ERROR_OK;

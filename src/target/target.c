@@ -1444,7 +1444,9 @@ int target_get_gdb_reg_list(struct target *target,
 {
 	int result = ERROR_FAIL;
 
-	if (!target_was_examined(target)) {
+    register_cache_invalidate_safe(target->reg_cache);
+
+    if (!target_was_examined(target)) {
 		LOG_ERROR("Target not examined yet");
 		goto done;
 	}

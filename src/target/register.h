@@ -171,6 +171,7 @@ struct reg *register_get_by_name(struct reg_cache *first,
 struct reg_cache **register_get_last_cache_p(struct reg_cache **first);
 void register_unlink_cache(struct reg_cache **cache_p, const struct reg_cache *cache);
 void register_cache_invalidate(struct reg_cache *cache);
+void register_cache_invalidate_safe(struct reg_cache* cache);
 
 void register_init_dummy(struct reg *reg);
 
